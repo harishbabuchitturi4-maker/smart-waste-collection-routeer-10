@@ -2104,24 +2104,36 @@ canvas.addEventListener('mouseleave', () => {
   if (tooltip) tooltip.style.display = 'none';
 });
 
-// Canvas Click to Select Node (Supports 2D & 3D)
-canvas.addEventListener('click', (e) => {
+// Canvas Interaction (Click and Touch to Select Node in 2D & 3D)
+function handleCanvasTap(clientX, clientY) {
   const rect = canvas.getBoundingClientRect();
-  const mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
-  const mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
+  const mouseX = (clientX - rect.left) * (canvas.width / rect.width);
+  const mouseY = (clientY - rect.top) * (canvas.height / rect.height);
 
   for (const node of Object.values(NODES)) {
     const pScreen = projectPoint(node.x, node.y, is3DMode ? 16 : 0);
     const dx = mouseX - pScreen.x;
     const dy = mouseY - pScreen.y;
-    if (Math.sqrt(dx * dx + dy * dy) < (is3DMode ? 26 : 22)) {
+    if (Math.sqrt(dx * dx + dy * dy) < (is3DMode ? 28 : 24)) {
       if (node.type === 'bin') {
         selectBin(node.id);
       }
       break;
     }
   }
+}
+
+canvas.addEventListener('click', (e) => {
+  handleCanvasTap(e.clientX, e.clientY);
 });
+
+canvas.addEventListener('touchstart', (e) => {
+  if (e.touches && e.touches.length > 0) {
+    const t = e.touches[0];
+    handleCanvasTap(t.clientX, t.clientY);
+  }
+}, { passive: true });
+
 
 // Initial Setup
 window.addEventListener('DOMContentLoaded', () => {

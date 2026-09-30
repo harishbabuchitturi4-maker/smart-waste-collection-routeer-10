@@ -1471,202 +1471,24 @@ code {
 }
 
 /* ==========================================================================
-   MOBILE RESPONSIVE OVERHAUL - Orientation & Button Size Fixes
+   MOBILE & TABLET RESPONSIVE OVERHAUL - Portrait & Landscape Support
    ========================================================================== */
 
-/* -- Tablet breakpoint (<= 768px) -- */
-@media (max-width: 768px) {
+/* -- Global Viewport Overflow Guard -- */
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+}
 
-  /* -- Header: stack vertically -- */
-  header {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 0.75rem 1rem;
-    gap: 0.65rem;
-  }
-
-  .logo-group {
-    gap: 0.75rem;
-  }
-
-  .logo-icon {
-    width: 38px;
-    height: 38px;
-    font-size: 1.25rem;
-    border-radius: 10px;
-  }
-
-  .title-area h1 {
-    font-size: 1.1rem;
-  }
-
-  .title-area p {
-    font-size: 0.72rem;
-  }
-
-  /* Badges: wrap into rows */
-  .header-actions {
-    width: 100%;
-    overflow: hidden;
-  }
-
-  .badges-group {
-    display: flex;
-    gap: 0.4rem;
-    flex-wrap: wrap;
-    width: 100%;
-  }
-
-  .badge {
-    padding: 0.4rem 0.65rem;
-    font-size: 0.65rem;
-    white-space: nowrap;
-    min-height: 32px;
-    display: inline-flex;
-    align-items: center;
-    flex: 0 1 auto;
-  }
-
-  /* -- Control sub-bar: stack rows -- */
-  .control-subbar {
-    flex-direction: column;
-    padding: 0.6rem 1rem;
-    gap: 0.65rem;
-    align-items: stretch;
-  }
-
-  /* Router algo group: label on top, buttons as full-width row */
-  .subbar-group {
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    justify-content: flex-start;
-  }
-
-  .subbar-group.algo-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-  }
-
-  .subbar-group.algo-group > span {
-    width: 100%;
-    margin-bottom: 0.1rem;
-  }
-
-  .scenario-btn,
-  .speed-btn {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.75rem;
-    min-height: 40px;
-    min-width: 44px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  /* Make router scenario buttons equal-width and fill the row */
-  .subbar-group.algo-group .scenario-btn {
-    flex: 1 1 0;
-    text-align: center;
-  }
-
-  /* -- Main grid: single column -- */
+/* -- Tablet Breakpoint (<= 1024px) -- */
+@media (max-width: 1024px) {
   .main-container {
     grid-template-columns: 1fr;
-    padding: 0.85rem 0.75rem;
+    padding: 1rem 1.25rem;
     gap: 1rem;
   }
 
-  /* -- Map panel header: wrap buttons -- */
-  .panel-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.6rem;
-  }
-
-  .panel-header h2 {
-    font-size: 0.95rem;
-  }
-
-  /* Map controls: forced 2x2 grid */
-  .map-controls {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 0.4rem;
-    width: 100%;
-    flex-wrap: unset;
-  }
-
-  .map-controls .btn {
-    padding: 0.5rem 0.5rem;
-    font-size: 0.72rem;
-    min-height: 42px;
-    min-width: unset !important;
-    width: 100%;
-    justify-content: center;
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: flex;
-    box-sizing: border-box;
-  }
-
-  /* Truck HUD overlay */
-  .truck-hud {
-    font-size: 0.68rem !important;
-    gap: 0.5rem !important;
-    padding: 0.4rem 0.6rem !important;
-    flex-wrap: wrap !important;
-  }
-
-  /* -- Canvas: responsive height -- */
-  .canvas-wrapper {
-    height: 340px;
-  }
-
-  /* -- Step navigator: smaller but still tappable -- */
-  .step-navigator {
-    padding: 0.4rem 0.55rem;
-    gap: 0.3rem;
-    font-size: 0.7rem;
-  }
-
-  .step-navigator .btn {
-    min-height: 36px;
-    min-width: unset !important;
-    padding: 0.3rem 0.55rem;
-    font-size: 0.68rem;
-  }
-
-  /* -- Bottom visualizer: single column -- */
-  .bottom-visualizer-grid {
-    grid-template-columns: 1fr;
-  }
-
-  /* -- Side cards -- */
-  .side-card {
-    padding: 0.95rem;
-  }
-
-  /* -- Bins telemetry: limit height + bigger items -- */
-  #binsListContainer {
-    max-height: 400px;
-  }
-
-  .bin-item {
-    padding: 0.7rem 0.85rem;
-  }
-
-  .bin-name {
-    font-size: 0.85rem;
-  }
-
-  .bin-meta {
-    font-size: 0.74rem;
-  }
-
-  /* -- Steps pipeline: scroll horizontally -- */
   .steps-pipeline {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -1675,141 +1497,643 @@ code {
   }
 
   .step-card {
-    min-width: 180px;
+    flex: 0 0 auto;
+    min-width: 170px;
+  }
+
+  .bottom-visualizer-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tech-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* -- Mobile & Small Tablet Breakpoint (<= 768px) -- */
+@media (max-width: 768px) {
+
+  /* Header */
+  header {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0.75rem 1rem;
+    gap: 0.65rem;
+  }
+
+  .logo-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  .logo-icon {
+    width: 38px;
+    height: 38px;
+    font-size: 1.25rem;
+    border-radius: 10px;
     flex-shrink: 0;
   }
 
-  /* -- Bottom Tabs: horizontal scroll with larger targets -- */
-  .tabs-nav {
+  .title-area {
+    min-width: 0;
+  }
+
+  .title-area h1 {
+    font-size: 1.05rem;
+    line-height: 1.25;
+  }
+
+  .title-area p {
+    font-size: 0.7rem;
+    line-height: 1.3;
+  }
+
+  .header-actions {
+    width: 100%;
+  }
+
+  .badges-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 0.35rem;
+    width: 100%;
+  }
+
+  .badge {
+    padding: 0.35rem 0.5rem;
+    font-size: 0.62rem;
+    text-align: center;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    border-radius: 6px;
+    min-height: 28px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+  }
+
+  /* Control sub-bar */
+  .control-subbar {
+    flex-direction: column;
+    padding: 0.6rem 0.85rem;
+    gap: 0.6rem;
+    align-items: stretch;
+  }
+
+  .subbar-group {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .subbar-group.algo-group {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.35rem;
+    width: 100%;
+  }
+
+  .subbar-group.algo-group > span {
+    grid-column: 1 / -1;
+    font-size: 0.72rem;
+    margin-bottom: 0.1rem;
+  }
+
+  .scenario-btn {
+    padding: 0.45rem 0.3rem;
+    font-size: 0.68rem;
+    min-height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-sizing: border-box;
+  }
+
+  .subbar-group:nth-child(2) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.35rem;
+    width: 100%;
+  }
+
+  .subbar-group:nth-child(2) > span {
+    font-size: 0.72rem;
+    flex-shrink: 0;
+  }
+
+  .speed-btn {
+    flex: 1;
+    min-height: 36px;
+    padding: 0.35rem 0.4rem;
+    font-size: 0.72rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .subbar-group:nth-child(3) {
+    width: 100%;
+  }
+
+  .subbar-group:nth-child(3) .btn {
+    width: 100%;
+    min-height: 38px;
+    justify-content: center;
+    font-size: 0.75rem;
+  }
+
+  /* Main Container */
+  .main-container {
+    grid-template-columns: 1fr;
+    padding: 0.75rem 0.65rem;
+    gap: 0.85rem;
+    width: 100%;
+  }
+
+  /* Map Panel Header & Controls */
+  .panel-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+    width: 100%;
+  }
+
+  .panel-header h2 {
+    font-size: 0.92rem;
+    font-weight: 700;
+  }
+
+  .map-controls {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.4rem !important;
+    width: 100% !important;
+  }
+
+  .map-controls .btn {
+    padding: 0.5rem 0.35rem;
+    font-size: 0.72rem;
+    min-height: 42px;
+    min-width: 0 !important;
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    box-sizing: border-box;
+  }
+
+  /* Canvas area */
+  .canvas-wrapper {
+    height: 300px;
+    width: 100%;
+    border-radius: 10px;
+    position: relative;
+  }
+
+  .truck-hud {
+    font-size: 0.65rem !important;
+    gap: 0.45rem !important;
+    padding: 0.35rem 0.55rem !important;
+    flex-wrap: wrap !important;
+    border-radius: 6px !important;
+    max-width: calc(100% - 16px) !important;
+  }
+
+  .step-navigator {
+    top: auto !important;
+    bottom: 8px !important;
+    right: 8px !important;
+    padding: 0.25rem 0.45rem !important;
+    gap: 0.25rem !important;
+    font-size: 0.68rem !important;
+    border-radius: 6px !important;
+  }
+
+  .step-navigator .btn {
+    min-height: 32px !important;
+    min-width: 0 !important;
+    padding: 0.2rem 0.45rem !important;
+    font-size: 0.65rem !important;
+  }
+
+  .map-legend {
+    bottom: 8px !important;
+    left: 8px !important;
+    font-size: 0.6rem !important;
+    padding: 0.35rem 0.5rem !important;
+    gap: 0.2rem !important;
+    max-width: 55% !important;
+    border-radius: 6px !important;
+  }
+
+  /* Bottom Visualizer Grid (Regression & Heap) */
+  .bottom-visualizer-grid {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+
+  .side-card {
+    padding: 0.85rem;
+    border-radius: 12px;
+    width: 100%;
+  }
+
+  .side-card h3 {
+    font-size: 0.88rem;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .bin-selector {
+    font-size: 0.72rem;
+    padding: 0.2rem 0.5rem;
+  }
+
+  #regressionCanvas {
+    height: 120px;
+    width: 100%;
+  }
+
+  .reg-stats {
+    font-size: 0.68rem;
+    padding: 0.35rem 0.5rem;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+
+  #heapTreeSvg {
+    height: 120px;
+    width: 100%;
+    max-height: 120px;
+  }
+
+  .heap-array {
+    gap: 0.25rem;
+    padding-bottom: 0.3rem;
+  }
+
+  .heap-cell {
+    min-width: 36px;
+    font-size: 0.65rem;
+    padding: 0.25rem 0.15rem;
+  }
+
+  .heap-cell-idx {
+    font-size: 0.55rem;
+  }
+
+  #heapRootExplanation {
+    font-size: 0.7rem;
+    word-break: break-word;
+  }
+
+  /* Savings metrics */
+  .metrics-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.45rem;
+    width: 100%;
+  }
+
+  .metric-box {
+    padding: 0.55rem 0.6rem;
+    border-radius: 8px;
+  }
+
+  .metric-label {
+    font-size: 0.65rem;
+  }
+
+  .metric-val {
+    font-size: 1.05rem;
+  }
+
+  /* Live Sandbox */
+  .sandbox-control {
+    padding: 0.65rem;
+    width: 100%;
+  }
+
+  /* Bins Telemetry List */
+  #binsListContainer {
+    max-height: 380px;
+    gap: 0.4rem;
+    width: 100%;
+  }
+
+  .bin-item {
+    padding: 0.6rem 0.75rem;
+    border-radius: 8px;
+    width: 100%;
+  }
+
+  .bin-main-row {
+    gap: 0.4rem;
+    width: 100%;
+  }
+
+  .bin-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .bin-name-row {
+    gap: 0.35rem;
+    flex-wrap: wrap;
+  }
+
+  .bin-name {
+    font-size: 0.8rem;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .bin-badge-tag {
+    font-size: 0.6rem;
+    padding: 1px 5px;
+    flex-shrink: 0;
+  }
+
+  .bin-meta {
+    font-size: 0.68rem;
+    line-height: 1.35;
+    word-break: break-word;
+  }
+
+  .bin-bar-wrap {
+    width: 65px;
+    height: 8px;
+    flex-shrink: 0;
+  }
+
+  .bin-detail-drawer {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+  }
+
+  .bin-detail-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.35rem;
+    width: 100%;
+  }
+
+  .bin-detail-chip {
+    padding: 0.3rem 0.4rem;
+    min-width: 0;
+  }
+
+  .bin-detail-chip span {
+    font-size: 0.58rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .bin-detail-chip strong {
+    font-size: 0.68rem;
+    word-break: break-word;
+  }
+
+  /* Bottom Tabs Navigation */
+  .explanation-section {
+    padding: 0.85rem;
+    border-radius: 12px;
+    width: 100%;
+  }
+
+  .tabs-nav {
+    display: flex;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    padding-bottom: 0.65rem;
+    gap: 0.35rem;
+    padding-bottom: 0.55rem;
     scroll-snap-type: x mandatory;
+    width: 100%;
   }
 
   .tab-btn {
-    padding: 0.55rem 0.9rem;
-    font-size: 0.78rem;
-    min-height: 42px;
-    flex-shrink: 0;
+    flex: 0 0 auto;
     scroll-snap-align: start;
+    padding: 0.45rem 0.8rem;
+    font-size: 0.74rem;
+    min-height: 40px;
+    white-space: nowrap;
   }
 
   .concept-grid {
     grid-template-columns: 1fr;
+    gap: 0.75rem;
+    width: 100%;
   }
 
-  /* -- Tech stack grid -- */
+  .concept-card {
+    padding: 0.85rem;
+    border-radius: 10px;
+    width: 100%;
+  }
+
+  .concept-card h4 {
+    font-size: 0.88rem;
+  }
+
+  .concept-card p,
+  .concept-card li {
+    font-size: 0.78rem;
+    line-height: 1.45;
+  }
+
+  /* Quiz */
+  .quiz-score-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.85rem;
+    width: 100%;
+  }
+
+  .quiz-card {
+    padding: 0.85rem;
+    width: 100%;
+  }
+
+  .quiz-opt-btn {
+    padding: 0.6rem 0.75rem;
+    font-size: 0.78rem;
+    min-height: 44px;
+    word-break: break-word;
+  }
+
+  /* Tech Stack */
   .tech-stack-section {
-    padding: 1.15rem 1rem;
+    padding: 1.15rem 0.85rem;
+    margin-top: 1rem;
+    border-radius: 12px;
+    width: 100%;
+  }
+
+  .tech-stack-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
   }
 
   .tech-grid {
     grid-template-columns: 1fr;
+    gap: 0.75rem;
+    width: 100%;
   }
 
-  /* -- Splash screen -- */
-  .splash-card {
-    padding: 1.5rem 1.15rem;
+  .tech-badge-card {
+    padding: 0.85rem;
+    gap: 0.7rem;
+    width: 100%;
   }
 
-  .splash-title {
-    font-size: 1.35rem;
+  .tech-icon-wrap {
+    width: 38px;
+    height: 38px;
+    font-size: 1.2rem;
   }
 
-  .splash-subjects-grid {
-    grid-template-columns: 1fr;
-    gap: 0.55rem;
-  }
-
-  .splash-highlights {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .splash-launch-btn {
-    padding: 0.95rem 1rem;
-    font-size: 1rem;
-    min-height: 52px;
-  }
-
-  /* -- Quiz modal -- */
-  .quiz-modal-container {
-    max-width: 95vw !important;
-  }
-
-  .quiz-opt-btn {
-    padding: 0.75rem 0.95rem;
+  .tech-title {
     font-size: 0.82rem;
-    min-height: 48px;
   }
 
-  /* -- Report modal -- */
+  .tech-role {
+    font-size: 0.7rem;
+  }
+
+  .tech-files-row code {
+    font-size: 0.65rem;
+  }
+
+  /* Modals */
   .report-modal {
-    width: 95%;
-    padding: 1.25rem;
+    width: 96%;
+    max-width: 96vw;
+    padding: 1.15rem;
+    border-radius: 12px;
   }
 
   .report-table {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     display: block;
     overflow-x: auto;
+    width: 100%;
   }
 
   .report-table th,
   .report-table td {
-    padding: 0.45rem 0.5rem;
+    padding: 0.4rem 0.45rem;
     white-space: nowrap;
   }
 
-  /* -- Metrics grid on mobile -- */
-  .metrics-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 0.5rem;
+  .splash-overlay {
+    padding: 0.75rem;
   }
 
-  /* -- Sandbox control -- */
-  .sandbox-control {
-    padding: 0.7rem;
+  .splash-card {
+    padding: 1.35rem 1rem;
+    width: 96%;
+    max-width: 96vw;
+    max-height: 92vh;
+    border-radius: 14px;
+  }
+
+  .splash-title {
+    font-size: 1.25rem;
+  }
+
+  .splash-subtitle {
+    font-size: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .splash-subjects-grid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .splash-subj-item {
+    padding: 0.6rem 0.7rem;
+    gap: 0.6rem;
+  }
+
+  .splash-subj-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+  }
+
+  .splash-highlights {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .splash-stat {
+    padding: 0.5rem 0.3rem;
+  }
+
+  .splash-stat-val {
+    font-size: 1.1rem;
+  }
+
+  .splash-stat-lbl {
+    font-size: 0.62rem;
+  }
+
+  .splash-launch-btn {
+    min-height: 48px;
+    font-size: 0.95rem;
+    padding: 0.75rem 1rem;
   }
 }
 
-/* -- Small phone breakpoint (<= 480px) -- */
+/* -- Small Phone Breakpoint (<= 480px) -- */
 @media (max-width: 480px) {
-
   header {
-    padding: 0.65rem 0.75rem;
+    padding: 0.6rem 0.7rem;
   }
 
   .title-area h1 {
     font-size: 0.95rem;
   }
 
-  .badge {
-    padding: 0.35rem 0.5rem;
-    font-size: 0.6rem;
-    min-height: 30px;
+  .title-area p {
+    font-size: 0.65rem;
   }
 
   .control-subbar {
-    padding: 0.5rem 0.75rem;
+    padding: 0.5rem 0.7rem;
   }
 
-  .scenario-btn,
-  .speed-btn {
-    padding: 0.45rem 0.55rem;
-    font-size: 0.68rem;
+  .scenario-btn {
+    font-size: 0.64rem;
+    padding: 0.4rem 0.2rem;
     min-height: 38px;
   }
 
-  /* Shorten long button labels on small phones */
-  .subbar-group.algo-group .scenario-btn {
-    font-size: 0.68rem;
-    padding: 0.45rem 0.35rem;
-  }
-
   .main-container {
-    padding: 0.65rem 0.5rem;
+    padding: 0.6rem 0.5rem;
     gap: 0.75rem;
   }
 
@@ -1822,197 +2146,121 @@ code {
     font-size: 0.85rem;
   }
 
-  .map-controls {
-    grid-template-columns: 1fr 1fr !important;
-    gap: 0.3rem;
-  }
-
   .map-controls .btn {
-    padding: 0.4rem 0.35rem;
-    font-size: 0.65rem;
-    min-height: 38px;
+    padding: 0.45rem 0.25rem;
+    font-size: 0.66rem;
+    min-height: 40px;
   }
 
   .canvas-wrapper {
     height: 260px;
-    border-radius: 8px;
   }
 
-  /* -- General button baseline: enforce touch targets -- */
   .btn {
     min-height: 38px;
-    padding: 0.45rem 0.6rem;
-    font-size: 0.75rem;
-  }
-
-  /* Truck HUD even smaller */
-  .truck-hud {
-    font-size: 0.62rem !important;
-    gap: 0.35rem !important;
-    padding: 0.3rem 0.5rem !important;
-  }
-
-  .map-legend {
-    font-size: 0.65rem;
-    padding: 0.45rem 0.6rem;
-    bottom: 8px;
-    left: 8px;
-    max-width: 60%;
-  }
-
-  .step-navigator {
-    top: 8px;
-    right: 8px;
-  }
-
-  .step-navigator .btn {
-    min-width: unset !important;
-  }
-
-  .side-card h3 {
-    font-size: 0.85rem;
-  }
-
-  .metric-val {
-    font-size: 1.05rem;
-  }
-
-  .metric-label {
-    font-size: 0.65rem;
-  }
-
-  .splash-title {
-    font-size: 1.15rem;
-  }
-
-  .splash-subtitle {
-    font-size: 0.78rem;
-  }
-
-  .splash-highlights {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.45rem;
-  }
-
-  .splash-stat-val {
-    font-size: 1.05rem;
-  }
-
-  .splash-stat-lbl {
-    font-size: 0.62rem;
-  }
-
-  .splash-launch-btn {
-    min-height: 48px;
-    font-size: 0.95rem;
-  }
-
-  .explanation-section {
-    padding: 0.75rem;
-    border-radius: 10px;
+    padding: 0.4rem 0.55rem;
+    font-size: 0.72rem;
   }
 
   .tab-btn {
-    padding: 0.45rem 0.7rem;
+    padding: 0.4rem 0.65rem;
     font-size: 0.7rem;
     min-height: 38px;
   }
-
-  #regressionCanvas {
-    height: 120px;
-  }
-
-  #heapTreeSvg {
-    height: 120px;
-  }
-
-  .bin-bar-wrap {
-    width: 65px;
-  }
-
-  .bin-name {
-    font-size: 0.78rem;
-  }
-
-  .bin-meta {
-    font-size: 0.68rem;
-  }
-
-  /* -- Heap array cells -- */
-  .heap-cell {
-    min-width: 36px;
-    font-size: 0.65rem;
-  }
-
-  .heap-cell-idx {
-    font-size: 0.55rem;
-  }
-
-  /* -- Regression stats -- */
-  .reg-stats {
-    font-size: 0.68rem;
-    flex-wrap: wrap;
-    gap: 0.25rem;
-  }
-
-  /* -- Concept cards -- */
-  .concept-card {
-    padding: 0.75rem;
-  }
-
-  .concept-card h4 {
-    font-size: 0.85rem;
-  }
-
-  .concept-card p,
-  .concept-card li {
-    font-size: 0.78rem;
-  }
 }
 
-/* -- Landscape orientation on short screens -- */
-@media (max-height: 500px) and (orientation: landscape) {
-  .canvas-wrapper {
-    height: 200px;
+/* -- Landscape Orientation (Short Screen Height <= 560px) -- */
+@media (orientation: landscape) and (max-height: 560px) {
+  header {
+    padding: 0.4rem 1rem;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .badges-group {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 0.35rem;
+  }
+
+  .badge {
+    flex: 0 0 auto;
+    width: auto;
   }
 
   .control-subbar {
     flex-direction: row;
     flex-wrap: wrap;
-    padding: 0.35rem 0.75rem;
+    padding: 0.35rem 0.85rem;
+    gap: 0.5rem;
   }
 
-  header {
-    padding: 0.45rem 1rem;
-    flex-direction: row;
+  .subbar-group.algo-group {
+    display: flex;
+    width: auto;
+    flex: 1 1 auto;
   }
 
-  .splash-card {
-    max-height: 90vh;
-    overflow-y: auto;
-    padding: 1.25rem 1.5rem;
+  .subbar-group.algo-group > span {
+    width: auto;
+    grid-column: auto;
   }
 
-  .splash-subjects-grid {
-    grid-template-columns: 1fr 1fr;
+  .scenario-btn {
+    width: auto;
+    flex: 0 0 auto;
+    padding: 0.35rem 0.6rem;
+    min-height: 34px;
   }
 
-  .steps-pipeline {
-    padding: 0.5rem 0.75rem;
+  .subbar-group:nth-child(2) {
+    width: auto;
+    flex: 0 0 auto;
   }
 
-  .step-card {
-    padding: 0.45rem 0.65rem;
-    min-width: 150px;
+  .speed-btn {
+    flex: 0 0 auto;
+    padding: 0.3rem 0.55rem;
+    min-height: 32px;
+  }
+
+  .subbar-group:nth-child(3) {
+    width: auto;
+    flex: 0 0 auto;
+  }
+
+  .subbar-group:nth-child(3) .btn {
+    width: auto;
+    min-height: 32px;
+  }
+
+  .main-container {
+    padding: 0.6rem 0.75rem;
+    gap: 0.75rem;
+  }
+
+  .canvas-wrapper {
+    height: 210px;
   }
 
   .map-controls .btn {
     min-height: 34px;
     font-size: 0.68rem;
   }
+
+  .splash-card {
+    max-height: 92vh;
+    overflow-y: auto;
+    padding: 1rem 1.25rem;
+  }
+
+  .splash-subjects-grid {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
-/* -- Ensure interactive elements meet minimum touch target on touch devices -- */
+/* -- Touch Devices (Pointer: Coarse) -- */
 @media (pointer: coarse) {
   .btn,
   .scenario-btn,
@@ -2022,38 +2270,23 @@ code {
   .quiz-opt-btn,
   .splash-launch-btn,
   .bin-item {
-    min-height: 44px;
+    min-height: 42px;
   }
 
   .badge {
-    min-height: 34px;
-    padding: 0.4rem 0.7rem;
+    min-height: 30px;
   }
 
-  .speed-btn {
-    padding: 0.5rem 0.9rem;
-  }
-
-  .scenario-btn {
-    padding: 0.5rem 0.75rem;
-  }
-
-  .algo-pill {
-    padding: 0.45rem 0.75rem;
-    font-size: 0.75rem;
-  }
-
-  /* Don't enforce min-width on grid children - causes overflow */
   .map-controls .btn {
-    min-width: unset;
+    min-width: 0;
     min-height: 42px;
   }
 
   .step-navigator .btn {
-    min-height: 38px;
-    min-width: unset;
-    padding: 0.4rem 0.6rem;
+    min-height: 34px;
+    min-width: 0;
   }
 }
+
 
 
