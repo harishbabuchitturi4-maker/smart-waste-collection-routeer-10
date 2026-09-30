@@ -1501,52 +1501,69 @@ code {
     font-size: 0.72rem;
   }
 
-  /* Badges: scrollable row */
+  /* Badges: wrap into rows */
   .header-actions {
     width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
   }
 
   .badges-group {
     display: flex;
     gap: 0.4rem;
-    flex-wrap: nowrap;
-    width: max-content;
+    flex-wrap: wrap;
+    width: 100%;
   }
 
   .badge {
-    padding: 0.45rem 0.75rem;
-    font-size: 0.68rem;
+    padding: 0.4rem 0.65rem;
+    font-size: 0.65rem;
     white-space: nowrap;
-    min-height: 36px;
+    min-height: 32px;
     display: inline-flex;
     align-items: center;
+    flex: 0 1 auto;
   }
 
   /* ── Control sub-bar: stack rows ── */
   .control-subbar {
     flex-direction: column;
     padding: 0.6rem 1rem;
-    gap: 0.55rem;
+    gap: 0.65rem;
     align-items: stretch;
   }
 
+  /* Router algo group: label on top, buttons as full-width row */
   .subbar-group {
     flex-wrap: wrap;
     gap: 0.4rem;
     justify-content: flex-start;
   }
 
+  .subbar-group.algo-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .subbar-group.algo-group > span {
+    width: 100%;
+    margin-bottom: 0.1rem;
+  }
+
   .scenario-btn,
   .speed-btn {
-    padding: 0.5rem 0.85rem;
-    font-size: 0.78rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
     min-height: 40px;
     min-width: 44px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+  }
+
+  /* Make router scenario buttons equal-width and fill the row */
+  .subbar-group.algo-group .scenario-btn {
+    flex: 1 1 0;
+    text-align: center;
   }
 
   /* ── Main grid: single column ── */
@@ -1567,20 +1584,30 @@ code {
     font-size: 0.95rem;
   }
 
+  /* Map controls: 2×2 grid */
   .map-controls {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 0.4rem;
     width: 100%;
   }
 
   .map-controls .btn {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.75rem;
+    padding: 0.5rem 0.6rem;
+    font-size: 0.73rem;
     min-height: 40px;
-    flex: 1 1 auto;
     justify-content: center;
     white-space: nowrap;
+    text-align: center;
+    width: 100%;
+  }
+
+  /* Truck HUD overlay */
+  .truck-hud {
+    font-size: 0.68rem !important;
+    gap: 0.5rem !important;
+    padding: 0.4rem 0.6rem !important;
+    flex-wrap: wrap !important;
   }
 
   /* ── Canvas: responsive height ── */
@@ -1716,9 +1743,9 @@ code {
   }
 
   .badge {
-    padding: 0.4rem 0.6rem;
-    font-size: 0.62rem;
-    min-height: 34px;
+    padding: 0.35rem 0.5rem;
+    font-size: 0.6rem;
+    min-height: 30px;
   }
 
   .control-subbar {
@@ -1727,9 +1754,15 @@ code {
 
   .scenario-btn,
   .speed-btn {
-    padding: 0.45rem 0.7rem;
-    font-size: 0.72rem;
+    padding: 0.45rem 0.55rem;
+    font-size: 0.68rem;
     min-height: 38px;
+  }
+
+  /* Shorten long button labels on small phones */
+  .subbar-group.algo-group .scenario-btn {
+    font-size: 0.68rem;
+    padding: 0.45rem 0.4rem;
   }
 
   .main-container {
@@ -1738,17 +1771,22 @@ code {
   }
 
   .map-panel {
-    padding: 0.85rem;
+    padding: 0.75rem;
     border-radius: 10px;
   }
 
   .panel-header h2 {
-    font-size: 0.88rem;
+    font-size: 0.85rem;
+  }
+
+  .map-controls {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.35rem;
   }
 
   .map-controls .btn {
-    padding: 0.45rem 0.6rem;
-    font-size: 0.7rem;
+    padding: 0.4rem 0.45rem;
+    font-size: 0.67rem;
     min-height: 38px;
   }
 
@@ -1762,6 +1800,13 @@ code {
     min-height: 40px;
     padding: 0.5rem 0.75rem;
     font-size: 0.78rem;
+  }
+
+  /* Truck HUD even smaller */
+  .truck-hud {
+    font-size: 0.62rem !important;
+    gap: 0.35rem !important;
+    padding: 0.3rem 0.5rem !important;
   }
 
   .map-legend {
