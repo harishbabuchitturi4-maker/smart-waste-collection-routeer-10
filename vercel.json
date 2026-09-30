@@ -1,0 +1,6 @@
+{
+  "outputDirectory": "web",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/$1" }
+  ]
+}
