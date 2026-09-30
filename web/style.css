@@ -129,6 +129,7 @@ header {
   font-weight: 700;
   letter-spacing: -0.02em;
   background: linear-gradient(to right, #ffffff 0%, #38bdf8 60%, #a78bfa 100%);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -1077,6 +1078,7 @@ code {
   font-weight: 800;
   letter-spacing: -0.02em;
   background: linear-gradient(135deg, #ffffff 0%, #38bdf8 50%, #818cf8 100%);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin-bottom: 0.4rem;
@@ -1356,6 +1358,7 @@ code {
   font-size: 1.2rem;
   font-weight: 800;
   background: linear-gradient(135deg, #38bdf8 0%, #a78bfa 50%, #34d399 100%);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -1468,13 +1471,13 @@ code {
 }
 
 /* ==========================================================================
-   MOBILE RESPONSIVE OVERHAUL — Orientation & Button Size Fixes
+   MOBILE RESPONSIVE OVERHAUL - Orientation & Button Size Fixes
    ========================================================================== */
 
-/* ── Tablet breakpoint (≤ 768px) ── */
+/* -- Tablet breakpoint (<= 768px) -- */
 @media (max-width: 768px) {
 
-  /* ── Header: stack vertically ── */
+  /* -- Header: stack vertically -- */
   header {
     flex-direction: column;
     align-items: flex-start;
@@ -1504,6 +1507,7 @@ code {
   /* Badges: wrap into rows */
   .header-actions {
     width: 100%;
+    overflow: hidden;
   }
 
   .badges-group {
@@ -1523,7 +1527,7 @@ code {
     flex: 0 1 auto;
   }
 
-  /* ── Control sub-bar: stack rows ── */
+  /* -- Control sub-bar: stack rows -- */
   .control-subbar {
     flex-direction: column;
     padding: 0.6rem 1rem;
@@ -1566,14 +1570,14 @@ code {
     text-align: center;
   }
 
-  /* ── Main grid: single column ── */
+  /* -- Main grid: single column -- */
   .main-container {
     grid-template-columns: 1fr;
     padding: 0.85rem 0.75rem;
     gap: 1rem;
   }
 
-  /* ── Map panel header: wrap buttons ── */
+  /* -- Map panel header: wrap buttons -- */
   .panel-header {
     flex-direction: column;
     align-items: flex-start;
@@ -1584,22 +1588,28 @@ code {
     font-size: 0.95rem;
   }
 
-  /* Map controls: 2×2 grid */
+  /* Map controls: forced 2x2 grid */
   .map-controls {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
     gap: 0.4rem;
     width: 100%;
+    flex-wrap: unset;
   }
 
   .map-controls .btn {
-    padding: 0.5rem 0.6rem;
-    font-size: 0.73rem;
-    min-height: 40px;
-    justify-content: center;
-    white-space: nowrap;
-    text-align: center;
+    padding: 0.5rem 0.5rem;
+    font-size: 0.72rem;
+    min-height: 42px;
+    min-width: unset !important;
     width: 100%;
+    justify-content: center;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    box-sizing: border-box;
   }
 
   /* Truck HUD overlay */
@@ -1610,12 +1620,12 @@ code {
     flex-wrap: wrap !important;
   }
 
-  /* ── Canvas: responsive height ── */
+  /* -- Canvas: responsive height -- */
   .canvas-wrapper {
     height: 340px;
   }
 
-  /* ── Step navigator: smaller but still tappable ── */
+  /* -- Step navigator: smaller but still tappable -- */
   .step-navigator {
     padding: 0.4rem 0.55rem;
     gap: 0.3rem;
@@ -1624,26 +1634,39 @@ code {
 
   .step-navigator .btn {
     min-height: 36px;
+    min-width: unset !important;
     padding: 0.3rem 0.55rem;
     font-size: 0.68rem;
   }
 
-  /* ── Bottom visualizer: single column ── */
+  /* -- Bottom visualizer: single column -- */
   .bottom-visualizer-grid {
     grid-template-columns: 1fr;
   }
 
-  /* ── Side cards ── */
+  /* -- Side cards -- */
   .side-card {
     padding: 0.95rem;
   }
 
-  /* ── Bins telemetry: limit height ── */
+  /* -- Bins telemetry: limit height + bigger items -- */
   #binsListContainer {
-    max-height: 350px;
+    max-height: 400px;
   }
 
-  /* ── Steps pipeline: scroll horizontally ── */
+  .bin-item {
+    padding: 0.7rem 0.85rem;
+  }
+
+  .bin-name {
+    font-size: 0.85rem;
+  }
+
+  .bin-meta {
+    font-size: 0.74rem;
+  }
+
+  /* -- Steps pipeline: scroll horizontally -- */
   .steps-pipeline {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -1656,22 +1679,28 @@ code {
     flex-shrink: 0;
   }
 
-  /* ── Explanation / Tabs ── */
+  /* -- Bottom Tabs: horizontal scroll with larger targets -- */
   .tabs-nav {
-    gap: 0.3rem;
+    gap: 0.35rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 0.65rem;
+    scroll-snap-type: x mandatory;
   }
 
   .tab-btn {
-    padding: 0.5rem 0.85rem;
+    padding: 0.55rem 0.9rem;
     font-size: 0.78rem;
-    min-height: 40px;
+    min-height: 42px;
+    flex-shrink: 0;
+    scroll-snap-align: start;
   }
 
   .concept-grid {
     grid-template-columns: 1fr;
   }
 
-  /* ── Tech stack grid ── */
+  /* -- Tech stack grid -- */
   .tech-stack-section {
     padding: 1.15rem 1rem;
   }
@@ -1680,7 +1709,7 @@ code {
     grid-template-columns: 1fr;
   }
 
-  /* ── Splash screen ── */
+  /* -- Splash screen -- */
   .splash-card {
     padding: 1.5rem 1.15rem;
   }
@@ -1704,7 +1733,7 @@ code {
     min-height: 52px;
   }
 
-  /* ── Quiz modal ── */
+  /* -- Quiz modal -- */
   .quiz-modal-container {
     max-width: 95vw !important;
   }
@@ -1715,7 +1744,7 @@ code {
     min-height: 48px;
   }
 
-  /* ── Report modal ── */
+  /* -- Report modal -- */
   .report-modal {
     width: 95%;
     padding: 1.25rem;
@@ -1723,15 +1752,29 @@ code {
 
   .report-table {
     font-size: 0.75rem;
+    display: block;
+    overflow-x: auto;
   }
 
   .report-table th,
   .report-table td {
     padding: 0.45rem 0.5rem;
+    white-space: nowrap;
+  }
+
+  /* -- Metrics grid on mobile -- */
+  .metrics-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+
+  /* -- Sandbox control -- */
+  .sandbox-control {
+    padding: 0.7rem;
   }
 }
 
-/* ── Small phone breakpoint (≤ 480px) ── */
+/* -- Small phone breakpoint (<= 480px) -- */
 @media (max-width: 480px) {
 
   header {
@@ -1762,7 +1805,7 @@ code {
   /* Shorten long button labels on small phones */
   .subbar-group.algo-group .scenario-btn {
     font-size: 0.68rem;
-    padding: 0.45rem 0.4rem;
+    padding: 0.45rem 0.35rem;
   }
 
   .main-container {
@@ -1771,7 +1814,7 @@ code {
   }
 
   .map-panel {
-    padding: 0.75rem;
+    padding: 0.65rem;
     border-radius: 10px;
   }
 
@@ -1780,26 +1823,26 @@ code {
   }
 
   .map-controls {
-    grid-template-columns: 1fr 1fr;
-    gap: 0.35rem;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.3rem;
   }
 
   .map-controls .btn {
-    padding: 0.4rem 0.45rem;
-    font-size: 0.67rem;
+    padding: 0.4rem 0.35rem;
+    font-size: 0.65rem;
     min-height: 38px;
   }
 
   .canvas-wrapper {
-    height: 280px;
+    height: 260px;
     border-radius: 8px;
   }
 
-  /* ── General button baseline: enforce touch targets ── */
+  /* -- General button baseline: enforce touch targets -- */
   .btn {
-    min-height: 40px;
-    padding: 0.5rem 0.75rem;
-    font-size: 0.78rem;
+    min-height: 38px;
+    padding: 0.45rem 0.6rem;
+    font-size: 0.75rem;
   }
 
   /* Truck HUD even smaller */
@@ -1822,8 +1865,12 @@ code {
     right: 8px;
   }
 
+  .step-navigator .btn {
+    min-width: unset !important;
+  }
+
   .side-card h3 {
-    font-size: 0.88rem;
+    font-size: 0.85rem;
   }
 
   .metric-val {
@@ -1861,13 +1908,13 @@ code {
   }
 
   .explanation-section {
-    padding: 0.85rem;
+    padding: 0.75rem;
     border-radius: 10px;
   }
 
   .tab-btn {
     padding: 0.45rem 0.7rem;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     min-height: 38px;
   }
 
@@ -1880,14 +1927,53 @@ code {
   }
 
   .bin-bar-wrap {
-    width: 70px;
+    width: 65px;
+  }
+
+  .bin-name {
+    font-size: 0.78rem;
+  }
+
+  .bin-meta {
+    font-size: 0.68rem;
+  }
+
+  /* -- Heap array cells -- */
+  .heap-cell {
+    min-width: 36px;
+    font-size: 0.65rem;
+  }
+
+  .heap-cell-idx {
+    font-size: 0.55rem;
+  }
+
+  /* -- Regression stats -- */
+  .reg-stats {
+    font-size: 0.68rem;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+
+  /* -- Concept cards -- */
+  .concept-card {
+    padding: 0.75rem;
+  }
+
+  .concept-card h4 {
+    font-size: 0.85rem;
+  }
+
+  .concept-card p,
+  .concept-card li {
+    font-size: 0.78rem;
   }
 }
 
-/* ── Landscape orientation on short screens ── */
+/* -- Landscape orientation on short screens -- */
 @media (max-height: 500px) and (orientation: landscape) {
   .canvas-wrapper {
-    height: 220px;
+    height: 200px;
   }
 
   .control-subbar {
@@ -1919,9 +2005,14 @@ code {
     padding: 0.45rem 0.65rem;
     min-width: 150px;
   }
+
+  .map-controls .btn {
+    min-height: 34px;
+    font-size: 0.68rem;
+  }
 }
 
-/* ── Ensure interactive elements always meet minimum touch target ── */
+/* -- Ensure interactive elements meet minimum touch target on touch devices -- */
 @media (pointer: coarse) {
   .btn,
   .scenario-btn,
@@ -1932,11 +2023,10 @@ code {
   .splash-launch-btn,
   .bin-item {
     min-height: 44px;
-    min-width: 44px;
   }
 
   .badge {
-    min-height: 36px;
+    min-height: 34px;
     padding: 0.4rem 0.7rem;
   }
 
@@ -1945,7 +2035,7 @@ code {
   }
 
   .scenario-btn {
-    padding: 0.5rem 0.85rem;
+    padding: 0.5rem 0.75rem;
   }
 
   .algo-pill {
@@ -1953,9 +2043,17 @@ code {
     font-size: 0.75rem;
   }
 
+  /* Don't enforce min-width on grid children - causes overflow */
+  .map-controls .btn {
+    min-width: unset;
+    min-height: 42px;
+  }
+
   .step-navigator .btn {
-    min-height: 40px;
+    min-height: 38px;
+    min-width: unset;
     padding: 0.4rem 0.6rem;
   }
 }
+
 
