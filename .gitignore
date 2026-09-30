@@ -28,3 +28,6 @@ Thumbs.db
 # OS Temporary files
 *.tmp
 *.log
+
+# Large archive files
+*.zip
