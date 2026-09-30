@@ -1698,24 +1698,53 @@ html, body {
     box-sizing: border-box;
   }
 
-  /* Canvas area */
+  /* Canvas area: enable horizontal touch scroll inside visualizer for full network visibility */
   .canvas-wrapper {
-    height: 300px;
+    height: 380px;
     width: 100%;
     border-radius: 10px;
     position: relative;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    scrollbar-width: thin !important;
+  }
+
+  .canvas-wrapper::-webkit-scrollbar {
+    display: block !important;
+    height: 5px !important;
+  }
+
+  .canvas-wrapper::-webkit-scrollbar-thumb {
+    background: rgba(56, 189, 248, 0.45);
+    border-radius: 4px;
+  }
+
+  #mapCanvas {
+    min-width: 760px;
+    width: 760px;
+    height: 380px;
+    display: block;
   }
 
   .truck-hud {
+    position: sticky !important;
+    top: 8px !important;
+    left: 8px !important;
     font-size: 0.65rem !important;
     gap: 0.45rem !important;
     padding: 0.35rem 0.55rem !important;
     flex-wrap: wrap !important;
     border-radius: 6px !important;
-    max-width: calc(100% - 16px) !important;
+    max-width: 85% !important;
+    z-index: 10;
+    pointer-events: none;
+    display: inline-flex !important;
   }
 
   .step-navigator {
+    position: sticky !important;
     top: auto !important;
     bottom: 8px !important;
     right: 8px !important;
@@ -1723,6 +1752,9 @@ html, body {
     gap: 0.25rem !important;
     font-size: 0.68rem !important;
     border-radius: 6px !important;
+    z-index: 10;
+    margin-left: auto;
+    display: inline-flex !important;
   }
 
   .step-navigator .btn {
@@ -1733,6 +1765,7 @@ html, body {
   }
 
   .map-legend {
+    position: sticky !important;
     bottom: 8px !important;
     left: 8px !important;
     font-size: 0.6rem !important;
@@ -1740,6 +1773,9 @@ html, body {
     gap: 0.2rem !important;
     max-width: 55% !important;
     border-radius: 6px !important;
+    z-index: 9;
+    pointer-events: none;
+    display: inline-flex !important;
   }
 
   /* Bottom Visualizer Grid (Regression & Heap) */
@@ -2153,7 +2189,13 @@ html, body {
   }
 
   .canvas-wrapper {
-    height: 260px;
+    height: 350px;
+  }
+
+  #mapCanvas {
+    min-width: 720px;
+    width: 720px;
+    height: 350px;
   }
 
   .btn {
@@ -2241,7 +2283,15 @@ html, body {
   }
 
   .canvas-wrapper {
-    height: 210px;
+    height: 240px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #mapCanvas {
+    min-width: 680px;
+    width: 680px;
+    height: 240px;
   }
 
   .map-controls .btn {
