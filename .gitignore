@@ -1,0 +1,30 @@
+# Compiled Java class files
+*.class
+java/bin/
+bin/
+
+# Python cache & virtual environments
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+
+# Large local binaries & tools
+tools/
+tools/jdk-17/
+
+# IDE & Editor metadata
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# OS Temporary files
+*.tmp
+*.log

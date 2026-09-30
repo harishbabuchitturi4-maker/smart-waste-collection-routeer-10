@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Waste Collection Router | Team 10</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap"
+    rel="stylesheet">
+</head>
+
+<body>
+
+  <!-- Top Navigation Header -->
+  <header>
+    <div class="logo-group">
+      <div class="logo-icon">🚛</div>
+      <div class="title-area">
+        <h1>Smart Waste Collection Router</h1>
+        <p>Team 10 &bull; Intelligent Municipal Routing & Fleet Optimizer</p>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <div class="badges-group">
+        <span class="badge badge-ai">AI: A* Search</span>
+        <span class="badge badge-adsa">ADSA: Graph + Max-Heap</span>
+        <span class="badge badge-oopj">OOPJ: Fleet Architecture</span>
+        <span class="badge badge-python">Python: Linear Regression</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Quick Control Bar (Router Left, Speed Middle, Export Right) -->
+  <div class="control-subbar">
+    <div class="subbar-group algo-group">
+      <span style="color:var(--text-muted); font-size:0.75rem; font-weight:600;">⚔️ ROUTER:</span>
+      <button class="scenario-btn algo-pill active" id="algoAstar" onclick="switchAlgorithmMode('astar')">🟢 NORMAL</button>
+      <button class="scenario-btn algo-pill" id="algoDijkstra" onclick="switchAlgorithmMode('dijkstra')">⚠️ WARNING</button>
+      <button class="scenario-btn algo-pill" id="algoConventional" onclick="switchAlgorithmMode('conventional')">🚨 CRITICAL OVERFLOW</button>
+    </div>
+
+    <div class="subbar-group">
+      <span style="color:var(--text-muted); font-size:0.75rem; font-weight:600;">⏩ SPEED:</span>
+      <button class="speed-btn" onclick="setSimSpeed(0.5, this)">0.5x</button>
+      <button class="speed-btn active" onclick="setSimSpeed(1.0, this)">1x</button>
+      <button class="speed-btn" onclick="setSimSpeed(2.0, this)">2x</button>
+      <button class="speed-btn" onclick="setSimSpeed(4.0, this)">4x</button>
+    </div>
+
+    <div class="subbar-group">
+      <button class="btn btn-secondary" onclick="openReportModal()" style="font-size:0.75rem; padding:0.35rem 0.85rem; border-color:rgba(56,189,248,0.35); background:rgba(56,189,248,0.12); color:#38bdf8; font-weight:600;">
+        📄 Export Audit Report
+      </button>
+    </div>
+  </div>
+
+
+  <div class="main-container">
+
+    <!-- Left Column: Canvas Map Visualizer + Bottom Grid (Python Regression & ADSA Max-Heap) -->
+    <div class="visualizer-column">
+
+      <!-- Top: City Road Network & Fleet Visualizer -->
+      <div class="map-panel">
+        <div class="panel-header">
+          <h2>🗺️ City Road Network & Fleet Visualizer</h2>
+          <div class="map-controls">
+            <button class="btn btn-secondary" id="trafficToggleBtn" onclick="toggleTrafficOverlay()">🚦 Live Traffic</button>
+            <button class="btn btn-secondary" id="viewModeBtn" onclick="toggleViewMode()">🏙️ 3D Isometric View</button>
+            <button class="btn btn-secondary" onclick="resetSimulation()">🔄 Reset</button>
+            <button class="btn btn-primary" id="playBtn" onclick="toggleRouteAnimation()">▶ Run Route</button>
+          </div>
+        </div>
+
+        <div class="canvas-wrapper">
+          <canvas id="mapCanvas" width="900" height="480"></canvas>
+
+          <!-- Live Truck HUD Display -->
+          <div
+            style="position:absolute; top:12px; left:12px; background:rgba(11,15,25,0.92); backdrop-filter:blur(8px); padding:0.5rem 0.85rem; border-radius:8px; border:1px solid var(--border-color); font-size:0.75rem; display:flex; gap:1rem; align-items:center; pointer-events:none;">
+            <div>🚛 <strong id="hudTruckId" style="color:#38bdf8;">EcoFleet Alpha</strong></div>
+            <div>Fuel: <strong id="hudFuelVal" style="color:#34d399;">0.00 L</strong></div>
+            <div>Load: <strong id="hudLoadVal" style="color:#fbbf24;">0 / 2500 L</strong></div>
+          </div>
+
+          <!-- Step Navigator Floating Controls -->
+          <div class="step-navigator">
+            <button class="btn btn-secondary" onclick="stepPreviousSegment()"
+              style="padding:0.2rem 0.5rem; font-size:0.7rem;">⏮ Prev</button>
+            <span id="stepCounterLabel" style="font-weight:600; color:#38bdf8;">Step 0/12</span>
+            <button class="btn btn-secondary" onclick="stepNextSegment()"
+              style="padding:0.2rem 0.5rem; font-size:0.7rem;">Next ⏭</button>
+          </div>
+
+          <!-- Floating Node Hover Tooltip Tag -->
+          <div id="hoverTooltip" class="hover-tooltip"></div>
+
+          <!-- Map Legend -->
+          <div class="map-legend">
+            <div class="legend-item"><span class="legend-dot" style="background:#ef4444;"></span> Filled Waste Bin (Pending Pickup)</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#10b981;"></span> Serviced & Clean Bin (0%)</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#3b82f6;"></span> Central Depot & Junctions</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#06b6d4;"></span> Collection Route Path</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom of Visualizer: Python Regression (OLS) and ADSA Max-Heap Status -->
+      <div class="bottom-visualizer-grid">
+
+        <!-- Python Regression Graph Component -->
+        <div class="side-card">
+          <h3>
+            <span>🐍 Python Regression (OLS)</span>
+            <select class="bin-selector" id="binSelect" onchange="renderRegressionGraph()">
+              <option value="BIN_01">BIN_01 (Market)</option>
+              <option value="BIN_02">BIN_02 (Suburb)</option>
+              <option value="BIN_03">BIN_03 (Food St.)</option>
+              <option value="BIN_04">BIN_04 (Park)</option>
+              <option value="BIN_05">BIN_05 (Transit)</option>
+              <option value="BIN_06">BIN_06 (Campus)</option>
+              <option value="BIN_07">BIN_07 (Mall)</option>
+              <option value="BIN_08">BIN_08 (Alley)</option>
+            </select>
+          </h3>
+          <div class="regression-panel">
+            <canvas id="regressionCanvas" width="420" height="110"></canvas>
+            <div class="reg-stats">
+              <span>Slope (m): <strong id="regSlope">+8.49%/hr</strong></span>
+              <span>R² Fit: <strong id="regR2">0.999</strong></span>
+              <span>Est. Full: <strong id="regFull">2.1 hrs</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ADSA Max-Heap Status Card -->
+        <div class="side-card">
+          <h3>🌲 ADSA Max-Heap Status</h3>
+          <div class="heap-display">
+            <svg id="heapTreeSvg" viewBox="0 0 380 125"></svg>
+            <div class="heap-array" id="heapArrayContainer">
+              <!-- Dynamically populated -->
+            </div>
+            <div style="font-size:0.75rem; color:#60a5fa;" id="heapRootExplanation">
+              Current Heap Root: <strong>BIN_01</strong> (Score: 157.9)
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Performance Comparison Card (Underneath Visualizer) -->
+      <div class="side-card" style="margin-top:0.85rem;">
+        <h3>
+          <span>📊 Smart vs Conventional Savings</span>
+          <span style="font-size:0.75rem; color:#34d399; font-weight:600;">⚡ 39.5% Fuel Saved</span>
+        </h3>
+        <div class="metrics-grid" style="grid-template-columns: repeat(4, 1fr);">
+          <div class="metric-box">
+            <div class="metric-label">Smart Distance</div>
+            <div class="metric-val metricDistanceVal" id="metricDistance">33.9 km</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-label">Diesel Consumed</div>
+            <div class="metric-val metricFuelVal" id="metricFuel">9.69 L</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-label">Fuel Saved</div>
+            <div class="metric-val metric-saved metricSavedVal" id="metricSaved">39.5%</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-label">CO₂ Prevented</div>
+            <div class="metric-val metric-saved metricCo2Val" id="metricCo2">16.9 kg</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right: Sandbox Slider & Bins Telemetry Sidebar -->
+    <div class="sidebar-panel">
+
+      <!-- Sandbox Fill Level Slider -->
+      <div class="side-card">
+        <h3>
+          <span>🎛️ Live Bin Sandbox Editor</span>
+          <select class="bin-selector" id="sandboxBinSelect" onchange="onSandboxBinSelectChanged()">
+            <option value="BIN_01">BIN_01 (Market)</option>
+            <option value="BIN_02">BIN_02 (Suburb)</option>
+            <option value="BIN_03">BIN_03 (Food St.)</option>
+            <option value="BIN_04">BIN_04 (Park)</option>
+            <option value="BIN_05">BIN_05 (Transit)</option>
+            <option value="BIN_06">BIN_06 (Campus)</option>
+            <option value="BIN_07">BIN_07 (Mall)</option>
+            <option value="BIN_08">BIN_08 (Alley)</option>
+          </select>
+        </h3>
+        <div class="sandbox-control">
+          <div class="slider-row">
+            <span>Fill Level: <strong id="sliderFillLabel" style="color:var(--accent-cyan);">410 L (82%)</strong></span>
+            <span id="sliderUrgencyBadge" style="color:var(--accent-red); font-weight:700;">URGENT</span>
+          </div>
+          <input type="range" id="binFillSlider" min="0" max="100" value="82" oninput="onSliderFillChange(this.value)">
+          <div style="margin-top:0.45rem; display:flex; gap:0.4rem;">
+            <button class="btn btn-primary" onclick="forceCollectSelectedBin()" style="font-size:0.72rem; padding:0.35rem 0.65rem; width:100%; justify-content:center;">
+              🎯 Collect This Bin In Route
+            </button>
+          </div>
+          <div style="font-size:0.68rem; color:var(--text-muted); margin-top:0.35rem;">
+            Selecting any bin or dragging slider immediately recalculates A* route to collect it!
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Bins Monitoring & ADSA Max-Heap Status Card -->
+      <div class="side-card telemetry-card">
+        <h3>
+          <span>🗑️ Smart Bins Telemetry & ADSA Heap Status</span>
+          <span style="font-size:0.7rem; font-weight:600; color:#38bdf8;">🌲 Ranked #1 to #8</span>
+        </h3>
+        <div id="binsListContainer">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom: Academic Concepts & Technical System Breakdown -->
+    <div class="explanation-section">
+      <div class="tabs-nav">
+        <button class="tab-btn active" onclick="switchTab('aiTab')">🧠 AI (A* Algorithm)</button>
+        <button class="tab-btn" onclick="switchTab('comparisonTab')">⚔️ Algorithm Arena</button>
+        <button class="tab-btn" onclick="switchTab('astarTableTab')">📐 A* Step Costs</button>
+        <button class="tab-btn" onclick="switchTab('adsaTab')">🌲 ADSA (Graph & Heap)</button>
+        <button class="tab-btn" onclick="switchTab('oopjTab')">☕ OOPJ Architecture</button>
+        <button class="tab-btn" onclick="switchTab('pythonTab')">🐍 Python Regression</button>
+        <button class="tab-btn" onclick="switchTab('archTab')">🔄 System Pipeline</button>
+        <button class="tab-btn" onclick="switchTab('quizTab')">🎓 Student Viva Quiz</button>
+      </div>
+
+      <!-- AI Tab -->
+      <div class="tab-content active" id="aiTab">
+        <div class="concept-grid">
+          <div class="concept-card">
+            <h4>How A* Search Works</h4>
+            <p>A* evaluates each node with the evaluation function: <code>f(n) = g(n) + h(n)</code></p>
+            <ul style="padding-left:1.2rem; margin-top:0.5rem; font-size:0.85rem; color:var(--text-muted);">
+              <li><code>g(n)</code>: Exact road network distance traveled from start node.</li>
+              <li><code>h(n)</code>: Admissible heuristic straight-line distance to goal:
+                <code>sqrt((x2-x1)² + (y2-y1)²)</code>.</li>
+              <li><code>f(n)</code>: Lowest estimated total travel cost.</li>
+            </ul>
+          </div>
+          <div class="concept-card">
+            <h4>Why A* Instead of Dijkstra?</h4>
+            <p>Dijkstra expands nodes in all directions uniformly (blind search). A* uses the heuristic
+              <code>h(n)</code> to direct the search toward the destination bin, exploring <strong>significantly fewer
+                states</strong> and running much faster in large cities.</p>
+          </div>
+          <div class="concept-card">
+            <h4>Heuristic Admissibility</h4>
+            <p>A heuristic is admissible if <code>h(n) &le; h*(n)</code> (never overestimates actual travel distance).
+              Straight-line Euclidean distance is always &le; winding road distance, guaranteeing that A* finds the
+              mathematically optimal shortest path.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Algorithm Arena Tab -->
+      <div class="tab-content" id="comparisonTab">
+        <h4 style="color:var(--accent-cyan); margin-bottom:0.5rem;">Algorithm Performance Benchmark Arena</h4>
+        <div class="concept-grid">
+          <div class="concept-card">
+            <h4>1. Conventional Fixed Route</h4>
+            <p>Blindly visits all 8 bins in order.</p>
+            <p style="margin-top:0.5rem; font-size:0.85rem; color:#f87171;">❌ Distance: <strong>56.0 km</strong> | Fuel:
+              <strong>16.0 L</strong></p>
+            <p style="font-size:0.75rem; color:var(--text-muted);">Wastes fuel visiting empty bins.</p>
+          </div>
+          <div class="concept-card">
+            <h4>2. Dijkstra Algorithm</h4>
+            <p>Shortest path without heuristic guidance.</p>
+            <p style="margin-top:0.5rem; font-size:0.85rem; color:#fbbf24;">⚠️ Expands 100% of nodes in search space.
+            </p>
+            <p style="font-size:0.75rem; color:var(--text-muted);">High CPU/Memory overhead in large cities.</p>
+          </div>
+          <div class="concept-card" style="border-color:var(--accent-green);">
+            <h4 style="color:var(--accent-green);">3. Normal Route (A* AI + Max-Heap)</h4>
+            <p>Combines predictive heap priority + A* heuristic.</p>
+            <p style="margin-top:0.5rem; font-size:0.85rem; color:#34d399;">✅ Distance: <strong>33.9 km</strong> | Fuel:
+              <strong>9.69 L</strong></p>
+            <p style="font-size:0.75rem; color:var(--text-muted);"><strong>39.5% Fuel Savings</strong> + Optimal
+              dispatching!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- A* Cost Table Tab -->
+      <div class="tab-content" id="astarTableTab">
+        <h4 style="color:var(--accent-cyan); margin-bottom:0.5rem;">A* Open/Closed Set Evaluation Log</h4>
+        <table class="report-table">
+          <thead>
+            <tr>
+              <th>Step</th>
+              <th>Current Node</th>
+              <th>Target Goal</th>
+              <th>g(n) Cost (km)</th>
+              <th>h(n) Heuristic (km)</th>
+              <th>f(n) Total Score</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="astarCostTableBody">
+            <!-- Dynamically injected -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ADSA Tab -->
+      <div class="tab-content" id="adsaTab">
+        <div class="concept-grid">
+          <div class="concept-card">
+            <h4>Adjacency List Graph (Unit 2)</h4>
+            <p>Stored as <code>Map&lt;String, List&lt;Edge&gt;&gt;</code>. Space complexity is <code>O(V + E)</code>,
+              compared to <code>O(V²)</code> for adjacency matrix, making it memory-efficient for sparse city road
+              networks.</p>
+          </div>
+          <div class="concept-card">
+            <h4>Binary Max-Heap Priority Queue</h4>
+            <p>Complete binary tree stored sequentially in a 1D array:</p>
+            <ul style="padding-left:1.2rem; margin-top:0.5rem; font-size:0.85rem; color:var(--text-muted);">
+              <li><code>Parent(i) = (i - 1) / 2</code></li>
+              <li><code>LeftChild(i) = 2i + 1</code>, <code>RightChild(i) = 2i + 2</code></li>
+              <li><code>extractMax()</code>: <code>O(log N)</code> via Heapify-Down.</li>
+              <li><code>insert()</code>: <code>O(log N)</code> via Heapify-Up.</li>
+            </ul>
+          </div>
+          <div class="concept-card">
+            <h4>Re-Prioritization with Regression</h4>
+            <p>Static fill alone causes overflow during peak hours. By incorporating Python's predicted fill rate, the
+              Max-Heap elevates fast-filling bins to the root <em>before</em> they overflow, achieving proactive
+              dispatching.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- OOPJ Tab -->
+      <div class="tab-content" id="oopjTab">
+        <div class="concept-grid">
+          <div class="concept-card">
+            <h4>Encapsulation & Domain Models</h4>
+            <p><code>Bin</code> and <code>Truck</code> encapsulate private state variables (current fuel, fill liters,
+              capacity). Mutations occur strictly via public business methods like <code>loadWaste()</code> and
+              <code>computePriority()</code>.</p>
+          </div>
+          <div class="concept-card">
+            <h4>Composition in FleetManager</h4>
+            <p>The <code>FleetManager</code> class implements a "has-a" relationship, orchestrating collections of
+              trucks and bins, tracking fleet-wide diesel consumption, and enforcing capacity limits.</p>
+          </div>
+          <div class="concept-card">
+            <h4>Interface & Comparable</h4>
+            <p><code>Bin</code> implements <code>Comparable&lt;Bin&gt;</code>, allowing clean integration with Java's
+              collections framework and custom Heap data structures based on priority score.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Python Tab -->
+      <div class="tab-content" id="pythonTab">
+        <div class="concept-grid">
+          <div class="concept-card">
+            <h4>Ordinary Least Squares (OLS)</h4>
+            <p>Fits the best straight line <code>y = mx + c</code> through historical hourly readings:</p>
+            <p style="font-size:0.85rem; margin-top:0.3rem;">
+              <code>m = (N&Sigma;xy - &Sigma;x&Sigma;y) / (N&Sigma;x² - (&Sigma;x)²)</code></p>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.3rem;">The slope <code>m</code>
+              represents the exact waste accumulation rate (% per hour).</p>
+          </div>
+          <div class="concept-card">
+            <h4>Goodness of Fit (R² Score)</h4>
+            <p>Measures how accurately the linear equation models real waste generation:
+              <code>R² = 1 - (SS_res / SS_tot)</code>. Values close to 1.0 confirm consistent fill trends.</p>
+          </div>
+          <div class="concept-card">
+            <h4>Decoupled Data Bridge</h4>
+            <p>Java exports sensor records to <code>historical_fill_data.csv</code>. Python performs numerical
+              regression and exports <code>predicted_fill_rates.json</code>. This decouples the heavy analytics engine
+              from real-time routing.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- System Pipeline Architecture Tab -->
+      <div class="tab-content" id="archTab">
+        <div class="concept-grid">
+          <div class="concept-card">
+            <h4>Step 1 & 2: Graph Setup & Data Export</h4>
+            <p><strong>Java (ADSA & OOPJ):</strong> Represents city intersections and waste bins as an Adjacency List
+              Graph (<code>O(V+E)</code> space). Exports sensor time-series to
+              <code>data/historical_fill_data.csv</code>.</p>
+          </div>
+          <div class="concept-card">
+            <h4>Step 3: Linear Regression Forecasting</h4>
+            <p><strong>Python (OLS Engine):</strong> Computes the fill accumulation rate
+              <code>m = &Delta;y / &Delta;x</code> for each bin using Ordinary Least Squares regression, outputting
+              <code>data/predicted_fill_rates.json</code>.</p>
+          </div>
+          <div class="concept-card">
+            <h4>Step 4: Dynamic Max-Heap Urgency Ranking</h4>
+            <p><strong>Java (ADSA Unit 2):</strong> Priority score =
+              <code>Current_Fill% + (Predicted_Rate &times; 6h)</code>. Rapidly filling bins jump to the root of the
+              Binary Max-Heap in <code>O(log N)</code> time.</p>
+          </div>
+          <div class="concept-card" style="border-color:var(--accent-green);">
+            <h4 style="color:var(--accent-green);">Step 5: AI A* Route Search</h4>
+            <p><strong>Java (AI):</strong> Evaluates <code>f(n) = g(n) + h(n)</code> to generate the shortest road path
+              connecting prioritized bins, skipping low-fill bins and saving <strong>39.5% diesel fuel</strong>.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Viva Quiz Tab -->
+      <div class="tab-content" id="quizTab">
+        <div class="quiz-score-banner" style="margin-bottom:1rem;">
+          <div>
+            <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; font-weight:700;">Student Viva Defense Score</div>
+            <div style="font-size:1.4rem; font-weight:800; color:#38bdf8;" id="quizScoreLabel">0 / 5 (0%)</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:0.75rem;">
+            <span id="quizBadgeStatus" class="quiz-badge" style="background:rgba(56,189,248,0.2); color:#38bdf8;">In Progress</span>
+            <button class="btn btn-secondary" onclick="resetQuiz()" style="font-size:0.72rem; padding:0.35rem 0.65rem;">🔄 Reset Quiz</button>
+          </div>
+        </div>
+
+        <div class="concept-grid" style="grid-template-columns:1fr 1fr;">
+          <!-- Question 1: AI -->
+          <div class="quiz-card" id="qCard1">
+            <div class="quiz-question-header">
+              <span class="quiz-question-title">1. Why is Euclidean distance guaranteed to be an <em>admissible heuristic</em> for A* pathfinding?</span>
+              <span class="quiz-badge" style="background:rgba(6,182,212,0.2); color:#06b6d4;">AI: A* Search</span>
+            </div>
+            <div class="quiz-options-list">
+              <button class="quiz-opt-btn" onclick="checkQuizAnswer(1, 0)">A. It calculates the curved driving distance with traffic congestion.</button>
+              <button class="quiz-opt-btn" onclick="checkQuizAnswer(1, 1)">B. Straight-line Euclidean distance is always &le; winding road distance, never overestimating actual cost ($h(n) \le h^*(n)$).</button>
+              <button class="quiz-opt-btn" onclick="checkQuizAnswer(1, 2)">C. It forces A* to expand 100% of all nodes blindly like Dijkstra.</button>
+              <button class="quiz-opt-btn" onclick="checkQuizAnswer(1, 3)">D. It reduces the road graph vertices from $O(V)$ to $O(1)$.</button>
+            </div>
+            <div class="quiz-explanation" id="qExpl1"></div>
+          </div>
+
+          <!-- Question 2: ADSA -->
+          <div class="quiz-card" id="qCard2">
+            <div class="quiz-question-header">
+              <span class="quiz-question-title">2. In a 0-indexed Binary Max-Heap array, what is the formula to locate the Left Child of index $i$?</span>
+              <span class="quiz-badge" style="background:rgba(59,130,246,0.2); color:#3b82f6;">ADSA: Max-Heap</span>
+            </div>
+            <div class="quiz-options-list">
+              <button class="quiz-opt-btn" onclick="checkQuizAnswer(2, 0)">A. $(i - 1) / 2$</button>
+              <button class="quiz-opt-btn" onclick="checkQuizAnswer(2, 1)">B. $2i + 2$</button>
+              <button class="quiz-opt-btn" onclick="checkQuizAnswer(2, 2)">C. $2i + 1$</button>
+              <button class="quiz-opt-btn" onclick="checkQuizAnswer(2, 3)">D. $i \times 2$</button>
+            </div>
+            <div class="quiz-explanation" id="qExpl2"></div>
+          </div>
+
+          <!-- Question 3: OOPJ -->
+          <div class="quiz-card" id="qCard3">
+            <div class="quiz-question-header">
+              <span class="quiz-question-title">3. How does the <code>Truck</code> class enforce capacity limits ($2500\text{ L}$) according to OOP principles?</span>
+              <span class="quiz-badge" style="background:rgba(16,185,129,0.2); color:#10b981;">OOPJ: Encapsulation</span>
+            </div>
+            <div class="quiz-options-list">
+              <button class="quiz-opt-btn" onclick="checkQuizAnswer(3, 0)">A. By making <code>currentLoadLiters</code> a public global static variable.</button>
+              <button class="quiz-opt-btn" onclick="checkQuizAnswer(3, 1)">B. Through <strong>Encapsulation</strong>: <code>private</code> load field mutated exclusively via validated <code>loadWaste()</code> method.</button>
+              <button class="quiz-opt-btn" onclick="checkQuizAnswer(3, 2)">C. By inheriting from an external Database interface.</button>
+              <button class="quiz-opt-btn" onclick="checkQuizAnswer(3, 3)">D. By storing all trucks inside an unmodifiable 2D array.</button>
+            </div>
+            <div class="quiz-explanation" id="qExpl3"></div>
+          </div>
+
+          <!-- Question 4: Python -->
+          <div class="quiz-card" id="qCard4">
+            <div class="quiz-question-header">
+              <span class="quiz-question-title">4. In the linear regression formula $y = mx + c$, what does the slope $m$ compute?</span>
+              <span class="quiz-badge" style="background:rgba(245,158,11,0.2); color:#f59e0b;">Python: Regression</span>
+            </div>
+            <div class="quiz-options-list">
+              <button class="quiz-opt-btn" onclick="checkQuizAnswer(4, 0)">A. The exact waste fill accumulation rate (% per hour) over time.</button>
+              <button class="quiz-opt-btn" onclick="checkQuizAnswer(4, 1)">B. The GPS latitude and longitude coordinates of the central depot.</button>
+              <button class="quiz-opt-btn" onclick="checkQuizAnswer(4, 2)">C. The total diesel fuel burned by the collection truck.</button>
+              <button class="quiz-opt-btn" onclick="checkQuizAnswer(4, 3)">D. The number of road segments in the Adjacency List graph.</button>
+            </div>
+            <div class="quiz-explanation" id="qExpl4"></div>
+          </div>
+
+          <!-- Question 5: Performance Benchmark -->
+          <div class="quiz-card" id="qCard5" style="grid-column:1 / -1;">
+            <div class="quiz-question-header">
+              <span class="quiz-question-title">5. What is the verified municipal fuel savings achieved by our Smart Waste Collection Router?</span>
+              <span class="quiz-badge" style="background:rgba(139,92,246,0.2); color:#a78bfa;">Municipal Economics</span>
+            </div>
+            <div class="quiz-options-list">
+              <button class="quiz-opt-btn" onclick="checkQuizAnswer(5, 0)">A. 5.2% fuel savings</button>
+              <button class="quiz-opt-btn" onclick="checkQuizAnswer(5, 1)">B. 15.0% fuel savings</button>
+              <button class="quiz-opt-btn" onclick="checkQuizAnswer(5, 2)">C. <strong>39.5% fuel savings</strong> (22.1 km avoided, 6.31 L diesel saved per trip)</button>
+              <button class="quiz-opt-btn" onclick="checkQuizAnswer(5, 3)">D. 100.0% fuel savings</button>
+            </div>
+            <div class="quiz-explanation" id="qExpl5"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Languages & Technologies Section (Full Width 4-Column Balanced Grid) -->
+    <div class="tech-stack-section">
+      <div class="tech-stack-header">
+        <div>
+          <h3>🛠️ Languages & Technologies Applied in Team 10 Project</h3>
+          <p style="font-size:0.75rem; color:var(--text-muted); margin-top:3px;">Core programming languages, machine learning frameworks, mathematical algorithms, and modules applied across the 4 subjects</p>
+        </div>
+        <div style="font-size:0.72rem; color:var(--accent-cyan); font-weight:600; display:flex; align-items:center; gap:0.5rem;">
+          <span style="background:rgba(56,189,248,0.15); padding:3px 8px; border-radius:6px; border:1px solid rgba(56,189,248,0.3);">💡 8 Integrated Technologies</span>
+          <span style="background:rgba(16,185,129,0.15); padding:3px 8px; border-radius:6px; border:1px solid rgba(16,185,129,0.3); color:#34d399;">🎓 4 Core Subjects Mapped</span>
+        </div>
+      </div>
+
+      <div class="tech-grid">
+        <!-- 1. Java 17 (OOPJ & ADSA) -->
+        <div class="tech-badge-card" data-tech="java">
+          <div class="tech-icon-wrap" style="background:rgba(239, 68, 68, 0.15); color:#f87171;">☕</div>
+          <div class="tech-info">
+            <div class="tech-title-row">
+              <span class="tech-title">Java 17 (OOPJ & ADSA)</span>
+              <span class="tech-sub-tag" style="background:rgba(239, 68, 68, 0.2); color:#f87171;">BACKEND CORE</span>
+            </div>
+            <div class="tech-role">Adjacency List Graph $O(V+E)$, Binary Max-Heap Priority Queue & A* Router ($f=g+h$).</div>
+            <div class="tech-files-row">
+              <code>Bin.java</code> <code>Truck.java</code> <code>AStarRouter.java</code> <code>RoadGraph.java</code> <code>BinMaxHeap.java</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Python 3.13 (ML & Statistics) -->
+        <div class="tech-badge-card" data-tech="python">
+          <div class="tech-icon-wrap" style="background:rgba(245, 158, 11, 0.15); color:#fbbf24;">🐍</div>
+          <div class="tech-info">
+            <div class="tech-title-row">
+              <span class="tech-title">Python 3.13 (ML & Stats)</span>
+              <span class="tech-sub-tag" style="background:rgba(245, 158, 11, 0.2); color:#fbbf24;">PREDICTIVE AI</span>
+            </div>
+            <div class="tech-role">Ordinary Least Squares (OLS) Linear Regression ($y = mx + c$, $R^2=0.999$) & overflow prediction.</div>
+            <div class="tech-files-row">
+              <code>predictor.py</code> <code>simulator.py</code> <code>test_predictor.py</code> <code>run_server.py</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Modern JavaScript ES6+ -->
+        <div class="tech-badge-card" data-tech="javascript">
+          <div class="tech-icon-wrap" style="background:rgba(234, 179, 8, 0.15); color:#facc15;">⚡</div>
+          <div class="tech-info">
+            <div class="tech-title-row">
+              <span class="tech-title">JavaScript (ES6+)</span>
+              <span class="tech-sub-tag" style="background:rgba(234, 179, 8, 0.2); color:#facc15;">SIM ENGINE</span>
+            </div>
+            <div class="tech-role">60 FPS Canvas 2D/3D Isometric Matrix Projection, Painter's Depth-Sort & Live Fleet HUD.</div>
+            <div class="tech-files-row">
+              <code>web/app.js</code> <code>projectPoint()</code> <code>masterLoop()</code> <code>drawMap()</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. HTML5 & Dynamic SVG -->
+        <div class="tech-badge-card" data-tech="html">
+          <div class="tech-icon-wrap" style="background:rgba(6, 182, 212, 0.15); color:#22d3ee;">🌐</div>
+          <div class="tech-info">
+            <div class="tech-title-row">
+              <span class="tech-title">HTML5 & Dynamic SVG</span>
+              <span class="tech-sub-tag" style="background:rgba(6, 182, 212, 0.2); color:#22d3ee;">FRONTEND UI</span>
+            </div>
+            <div class="tech-role">Semantic container layout, dynamic SVG parametric binary tree branches & modal reports.</div>
+            <div class="tech-files-row">
+              <code>index.html</code> <code>&lt;svg id="heapTreeSvg"&gt;</code> <code>&lt;canvas&gt;</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. Vanilla CSS3 Design Tokens -->
+        <div class="tech-badge-card" data-tech="css">
+          <div class="tech-icon-wrap" style="background:rgba(99, 102, 241, 0.15); color:#818cf8;">🎨</div>
+          <div class="tech-info">
+            <div class="tech-title-row">
+              <span class="tech-title">Vanilla CSS3</span>
+              <span class="tech-sub-tag" style="background:rgba(99, 102, 241, 0.2); color:#818cf8;">GLASSMORPHISM</span>
+            </div>
+            <div class="tech-role">Deep space HSL design tokens, backdrop-filter blur(16px), radar pulse & shimmer keyframes.</div>
+            <div class="tech-files-row">
+              <code>style.css</code> <code>@keyframes</code> <code>backdrop-filter</code> <code>var(--tokens)</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. Web Audio API -->
+        <div class="tech-badge-card" data-tech="webaudio">
+          <div class="tech-icon-wrap" style="background:rgba(16, 185, 129, 0.15); color:#34d399;">🔊</div>
+          <div class="tech-info">
+            <div class="tech-title-row">
+              <span class="tech-title">Web Audio API</span>
+              <span class="tech-sub-tag" style="background:rgba(16, 185, 129, 0.2); color:#34d399;">AUDIO DSP</span>
+            </div>
+            <div class="tech-role">Zero-asset procedural sound oscillator synthesis for collection chimes & UI audio feedback.</div>
+            <div class="tech-files-row">
+              <code>AudioContext</code> <code>createOscillator()</code> <code>playChimeSound()</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- 7. Windows Batch Scripting -->
+        <div class="tech-badge-card" data-tech="batch">
+          <div class="tech-icon-wrap" style="background:rgba(168, 85, 247, 0.15); color:#c084fc;">🖥️</div>
+          <div class="tech-info">
+            <div class="tech-title-row">
+              <span class="tech-title">Windows Batch</span>
+              <span class="tech-sub-tag" style="background:rgba(168, 85, 247, 0.2); color:#c084fc;">DEVOPS / BUILD</span>
+            </div>
+            <div class="tech-role">One-click build pipeline verifying JDK, compiling Java (`javac -d bin`), and booting server.</div>
+            <div class="tech-files-row">
+              <code>run.bat</code> <code>javac</code> <code>python run_server.py</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- 8. JSON & Serialization Protocol -->
+        <div class="tech-badge-card" data-tech="json">
+          <div class="tech-icon-wrap" style="background:rgba(236, 72, 153, 0.15); color:#f472b6;">📦</div>
+          <div class="tech-info">
+            <div class="tech-title-row">
+              <span class="tech-title">JSON Protocol</span>
+              <span class="tech-sub-tag" style="background:rgba(236, 72, 153, 0.2); color:#f472b6;">DATA BRIDGE</span>
+            </div>
+            <div class="tech-role">Decoupled data exchange bridging Java models, Python regression, and client front-end.</div>
+            <div class="tech-files-row">
+              <code>Graph Schema</code> <code>Node Payloads</code> <code>Scenario JSON</code>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Modal: Municipal Audit & Route Report -->
+  <div class="modal-overlay" id="reportModal">
+    <div class="report-modal">
+      <div class="report-header">
+        <div>
+          <h2 style="font-size:1.2rem; color:var(--accent-cyan);">📋 Municipal Waste Collection Audit Report</h2>
+          <p style="font-size:0.75rem; color:var(--text-muted);">Smart Waste Collection Router &bull; Team 10</p>
+        </div>
+        <button class="btn btn-secondary" onclick="closeReportModal()">✕ Close</button>
+      </div>
+
+      <p style="font-size:0.85rem; margin-bottom:1rem;">
+        Official dispatch audit generated after running AI A* route optimization over the road graph.
+      </p>
+
+      <table class="report-table">
+        <thead>
+          <tr>
+            <th>Parameter</th>
+            <th>Conventional System</th>
+            <th>Smart Waste Router</th>
+            <th>Optimization Gain</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Total Distance</strong></td>
+            <td>56.00 km</td>
+            <td>33.90 km</td>
+            <td><span style="color:var(--accent-green);">-22.10 km (39.5% less)</span></td>
+          </tr>
+          <tr>
+            <td><strong>Fuel Consumption</strong></td>
+            <td>16.00 Liters</td>
+            <td>9.69 Liters</td>
+            <td><span style="color:var(--accent-green);">-6.31 L Diesel</span></td>
+          </tr>
+          <tr>
+            <td><strong>Bins Serviced</strong></td>
+            <td>8 Bins (All)</td>
+            <td>5 Bins (Urgent)</td>
+            <td>3 Unnecessary Trips Avoided</td>
+          </tr>
+          <tr>
+            <td><strong>Carbon Footprint</strong></td>
+            <td>42.88 kg CO₂</td>
+            <td>25.96 kg CO₂</td>
+            <td><span style="color:var(--accent-green);">-16.92 kg CO₂ Saved</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="margin-top:1.5rem; display:flex; justify-content:flex-end; gap:0.5rem;">
+        <button class="btn btn-primary" onclick="window.print()">🖨️ Print Report</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Intro Flash / Splash Guide Screen -->
+  <div class="splash-overlay hidden" id="splashScreen">
+    <div class="splash-card">
+      <div class="splash-badge">TEAM 10 &bull; CAPSTONE PROJECT</div>
+      <div class="splash-icon-anim">🚛</div>
+      <h2 class="splash-title">Smart Waste Collection Router</h2>
+      <p class="splash-subtitle">Next-Generation Municipal Routing combining AI, ADSA, OOPJ & Python Analytics</p>
+
+      <div class="splash-subjects-grid">
+        <div class="splash-subj-item">
+          <div class="splash-subj-icon" style="background:rgba(6,182,212,0.15); color:#06b6d4;">🧠</div>
+          <div>
+            <strong>AI: A* Search Algorithm</strong>
+            <p>Admissible Euclidean heuristic $f(n)=g(n)+h(n)$ guaranteeing optimal paths.</p>
+          </div>
+        </div>
+        <div class="splash-subj-item">
+          <div class="splash-subj-icon" style="background:rgba(59,130,246,0.15); color:#3b82f6;">🌲</div>
+          <div>
+            <strong>ADSA Unit 2: Graph & Heap</strong>
+            <p>Adjacency List graph $O(V+E)$ + Binary Max-Heap priority queue $O(\log N)$.</p>
+          </div>
+        </div>
+        <div class="splash-subj-item">
+          <div class="splash-subj-icon" style="background:rgba(16,185,129,0.15); color:#10b981;">☕</div>
+          <div>
+            <strong>OOPJ: Java Fleet Models</strong>
+            <p>Encapsulated domain entities (Bin, Truck, FleetManager) with strict invariants.</p>
+          </div>
+        </div>
+        <div class="splash-subj-item">
+          <div class="splash-subj-icon" style="background:rgba(245,158,11,0.15); color:#f59e0b;">🐍</div>
+          <div>
+            <strong>Python: OLS Regression</strong>
+            <p>Calculates waste accumulation slope $m$ (%/hr) and $R^2$ fit over time-series.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="splash-highlights">
+        <div class="splash-stat">
+          <span class="splash-stat-val" style="color:#38bdf8;">33.9 km</span>
+          <span class="splash-stat-lbl">Route Dist (vs 56.0)</span>
+        </div>
+        <div class="splash-stat">
+          <span class="splash-stat-val" style="color:#34d399;">39.5%</span>
+          <span class="splash-stat-lbl">Fuel Saved</span>
+        </div>
+        <div class="splash-stat">
+          <span class="splash-stat-val" style="color:#f43f5e;">16.9 kg</span>
+          <span class="splash-stat-lbl">CO₂ Prevented</span>
+        </div>
+        <div class="splash-stat">
+          <span class="splash-stat-val" style="color:#fbbf24;">5 / 8</span>
+          <span class="splash-stat-lbl">Urgent Bins Picked</span>
+        </div>
+      </div>
+
+      <div class="splash-action-row">
+        <button class="splash-launch-btn" onclick="dismissSplashScreen()">
+          🚀 Launch Interactive Visualizer & Routing Engine
+        </button>
+      </div>
+
+      <div class="splash-footer-note">
+        Interactive Map &bull; Live Sandbox Slider &bull; Algorithm Arena &bull; Viva Quiz
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Interactive Student Viva Quiz Module -->
+  <div class="modal-overlay" id="quizModal">
+    <div class="report-modal quiz-modal-container">
+      <div class="report-header">
+        <div>
+          <h2 style="font-size:1.2rem; color:var(--accent-cyan);">🎓 Interactive Student Viva Quiz</h2>
+          <p style="font-size:0.75rem; color:var(--text-muted);">Self-Assessment & Viva Defense Prep &bull; Team 10</p>
+        </div>
+        <button class="btn btn-secondary" onclick="closeQuizModal()">✕ Close</button>
+      </div>
+
+      <!-- Live Score & Viva Readiness Banner -->
+      <div class="quiz-score-banner">
+        <div>
+          <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; font-weight:700;">Viva Readiness Score</div>
+          <div style="font-size:1.4rem; font-weight:800; color:#38bdf8;" id="quizScoreLabel">0 / 5 (0%)</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:0.75rem;">
+          <span id="quizBadgeStatus" class="quiz-badge" style="background:rgba(56,189,248,0.2); color:#38bdf8;">In Progress</span>
+          <button class="btn btn-secondary" onclick="resetQuiz()" style="font-size:0.72rem; padding:0.35rem 0.65rem;">🔄 Reset</button>
+        </div>
+      </div>
+
+      <!-- Question 1: AI (A* Heuristic) -->
+      <div class="quiz-card" id="qCard1">
+        <div class="quiz-question-header">
+          <span class="quiz-question-title">1. Why is Euclidean distance guaranteed to be an <em>admissible heuristic</em> in A* pathfinding?</span>
+          <span class="quiz-badge" style="background:rgba(6,182,212,0.2); color:#06b6d4;">AI: A* Search</span>
+        </div>
+        <div class="quiz-options-list">
+          <button class="quiz-opt-btn" onclick="checkQuizAnswer(1, 0)">A. It calculates the curved driving distance with traffic congestion.</button>
+          <button class="quiz-opt-btn" onclick="checkQuizAnswer(1, 1)">B. Straight-line Euclidean distance is always &le; winding road distance, never overestimating actual cost ($h(n) \le h^*(n)$).</button>
+          <button class="quiz-opt-btn" onclick="checkQuizAnswer(1, 2)">C. It forces A* to expand 100% of all nodes blindly like Dijkstra.</button>
+          <button class="quiz-opt-btn" onclick="checkQuizAnswer(1, 3)">D. It reduces the road graph vertices from $O(V)$ to $O(1)$.</button>
+        </div>
+        <div class="quiz-explanation" id="qExpl1"></div>
+      </div>
+
+      <!-- Question 2: ADSA (Max-Heap Indexing) -->
+      <div class="quiz-card" id="qCard2">
+        <div class="quiz-question-header">
+          <span class="quiz-question-title">2. In a 0-indexed Binary Max-Heap array, what is the formula to locate the Left Child of index $i$?</span>
+          <span class="quiz-badge" style="background:rgba(59,130,246,0.2); color:#3b82f6;">ADSA: Max-Heap</span>
+        </div>
+        <div class="quiz-options-list">
+          <button class="quiz-opt-btn" onclick="checkQuizAnswer(2, 0)">A. $(i - 1) / 2$</button>
+          <button class="quiz-opt-btn" onclick="checkQuizAnswer(2, 1)">B. $2i + 2$</button>
+          <button class="quiz-opt-btn" onclick="checkQuizAnswer(2, 2)">C. $2i + 1$</button>
+          <button class="quiz-opt-btn" onclick="checkQuizAnswer(2, 3)">D. $i \times 2$</button>
+        </div>
+        <div class="quiz-explanation" id="qExpl2"></div>
+      </div>
+
+      <!-- Question 3: OOPJ (Encapsulation) -->
+      <div class="quiz-card" id="qCard3">
+        <div class="quiz-question-header">
+          <span class="quiz-question-title">3. How does the <code>Truck</code> class enforce capacity limits ($2500\text{ L}$) according to OOP principles?</span>
+          <span class="quiz-badge" style="background:rgba(16,185,129,0.2); color:#10b981;">OOPJ: Encapsulation</span>
+        </div>
+        <div class="quiz-options-list">
+          <button class="quiz-opt-btn" onclick="checkQuizAnswer(3, 0)">A. By making <code>currentLoadLiters</code> a public global static variable.</button>
+          <button class="quiz-opt-btn" onclick="checkQuizAnswer(3, 1)">B. Through <strong>Encapsulation</strong>: <code>private</code> load field mutated exclusively via validated <code>loadWaste()</code> method.</button>
+          <button class="quiz-opt-btn" onclick="checkQuizAnswer(3, 2)">C. By inheriting from an external Database interface.</button>
+          <button class="quiz-opt-btn" onclick="checkQuizAnswer(3, 3)">D. By storing all trucks inside an unmodifiable 2D array.</button>
+        </div>
+        <div class="quiz-explanation" id="qExpl3"></div>
+      </div>
+
+      <!-- Question 4: Python (OLS Regression) -->
+      <div class="quiz-card" id="qCard4">
+        <div class="quiz-question-header">
+          <span class="quiz-question-title">4. In the linear regression formula $y = mx + c$, what does the slope $m$ compute?</span>
+          <span class="quiz-badge" style="background:rgba(245,158,11,0.2); color:#f59e0b;">Python: Regression</span>
+        </div>
+        <div class="quiz-options-list">
+          <button class="quiz-opt-btn" onclick="checkQuizAnswer(4, 0)">A. The exact waste fill accumulation rate (% per hour) over time.</button>
+          <button class="quiz-opt-btn" onclick="checkQuizAnswer(4, 1)">B. The GPS latitude and longitude coordinates of the central depot.</button>
+          <button class="quiz-opt-btn" onclick="checkQuizAnswer(4, 2)">C. The total diesel fuel burned by the collection truck.</button>
+          <button class="quiz-opt-btn" onclick="checkQuizAnswer(4, 3)">D. The number of road segments in the Adjacency List graph.</button>
+        </div>
+        <div class="quiz-explanation" id="qExpl4"></div>
+      </div>
+
+      <!-- Question 5: Performance Benchmark -->
+      <div class="quiz-card" id="qCard5">
+        <div class="quiz-question-header">
+          <span class="quiz-question-title">5. What is the verified municipal fuel savings achieved by our Smart Waste Collection Router?</span>
+          <span class="quiz-badge" style="background:rgba(139,92,246,0.2); color:#a78bfa;">Municipal Economics</span>
+        </div>
+        <div class="quiz-options-list">
+          <button class="quiz-opt-btn" onclick="checkQuizAnswer(5, 0)">A. 5.2% fuel savings</button>
+          <button class="quiz-opt-btn" onclick="checkQuizAnswer(5, 1)">B. 15.0% fuel savings</button>
+          <button class="quiz-opt-btn" onclick="checkQuizAnswer(5, 2)">C. <strong>39.5% fuel savings</strong> (22.1 km avoided, 6.31 L diesel saved per trip)</button>
+          <button class="quiz-opt-btn" onclick="checkQuizAnswer(5, 3)">D. 100.0% fuel savings</button>
+        </div>
+        <div class="quiz-explanation" id="qExpl5"></div>
+      </div>
+
+      <div style="margin-top:1.5rem; display:flex; justify-content:flex-end; gap:0.5rem;">
+        <button class="btn btn-primary" onclick="closeQuizModal()">Finish & Return to Visualizer</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,66 @@
+{
+  "BIN_01": {
+    "current_fill_percentage": 81.84,
+    "predicted_rate_per_hour": 8.4879,
+    "intercept": 31.1093,
+    "r2_score": 0.9998,
+    "hours_to_full": 2.1,
+    "urgency": "CRITICAL"
+  },
+  "BIN_02": {
+    "current_fill_percentage": 27.8,
+    "predicted_rate_per_hour": 3.2718,
+    "intercept": 8.0518,
+    "r2_score": 0.9982,
+    "hours_to_full": 22.1,
+    "urgency": "NORMAL"
+  },
+  "BIN_03": {
+    "current_fill_percentage": 74.86,
+    "predicted_rate_per_hour": 7.8232,
+    "intercept": 28.2175,
+    "r2_score": 0.9997,
+    "hours_to_full": 3.2,
+    "urgency": "WARNING"
+  },
+  "BIN_04": {
+    "current_fill_percentage": 25.88,
+    "predicted_rate_per_hour": 2.4864,
+    "intercept": 10.9879,
+    "r2_score": 0.997,
+    "hours_to_full": 29.8,
+    "urgency": "NORMAL"
+  },
+  "BIN_05": {
+    "current_fill_percentage": 74.19,
+    "predicted_rate_per_hour": 8.9846,
+    "intercept": 20.3375,
+    "r2_score": 0.9997,
+    "hours_to_full": 2.9,
+    "urgency": "WARNING"
+  },
+  "BIN_06": {
+    "current_fill_percentage": 48.44,
+    "predicted_rate_per_hour": 4.0254,
+    "intercept": 23.8339,
+    "r2_score": 0.9982,
+    "hours_to_full": 12.8,
+    "urgency": "NORMAL"
+  },
+  "BIN_07": {
+    "current_fill_percentage": 65.39,
+    "predicted_rate_per_hour": 6.57,
+    "intercept": 25.77,
+    "r2_score": 0.9999,
+    "hours_to_full": 5.3,
+    "urgency": "WARNING"
+  },
+  "BIN_08": {
+    "current_fill_percentage": 23.18,
+    "predicted_rate_per_hour": 1.7843,
+    "intercept": 12.58,
+    "r2_score": 0.9982,
+    "hours_to_full": 43.1,
+    "urgency": "NORMAL"
+  }
+}
